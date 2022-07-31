@@ -8,7 +8,7 @@ type Options = {
 }[];
 
 const getPatterns = (options: Options) => options[0].patterns;
-const getIncludes = (options: Options) => options[0].includes;
+// const getIncludes = (options: Options) => options[0].includes;
 const getExecludes = (options: Options) => options[0].execludes;
 const convertIgnore = (optionList: string[]) =>
   optionList.map((option) => ignore({ allowRelativePaths: true }).add(option));
