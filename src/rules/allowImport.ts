@@ -30,7 +30,7 @@ export const allowImport: TSESLint.RuleModule<"messageId", []> = {
         type: "object",
         properties: {
           patterns: "object",
-          includes: "array",
+          // includes: "array",
           execludes: "array",
         },
         additionalProperties: false,
@@ -40,14 +40,23 @@ export const allowImport: TSESLint.RuleModule<"messageId", []> = {
   create: (context) => {
     const { parserServices, options, getFilename } = context;
     const patterns = getPatterns(options);
-    const includes = getIncludes(options) || ["./**/*"];
+    // const includes = getIncludes(options) || ["./**/*"];
     const execludes = getExecludes(options) || [];
 
     if (!parserServices) return {};
 
     const allowPatterns: Ignore[] = convertIgnore(patterns);
-    const allowIncludes: Ignore[] = convertIgnore(includes);
+    // const allowIncludes: Ignore[] = convertIgnore(includes);
     const allowExecludes: Ignore[] = convertIgnore(execludes);
+
+    // exeludes で渡されたパスは除外
+    for (const execlude of allowExecludes) {
+      if (execlude.ignores(getFilename())) {
+        return {
+          Program: () => {},
+        };
+      }
+    }
 
     const checkAllowPatterns = (importSource: string) =>
       allowPatterns.length > 0 &&
@@ -56,22 +65,6 @@ export const allowImport: TSESLint.RuleModule<"messageId", []> = {
     return {
       ImportDeclaration(node): void {
         const importSource = node.source.value as string;
-
-        // exeludes で渡されたパスは除外
-        for (const execlude of allowExecludes) {
-          if (execlude.ignores(importSource)) {
-            return;
-          }
-        }
-
-        // includes で渡されたパスの下を見る
-        // execlude とどちらか1つでいい気がするので一旦保留
-        for (const include of allowIncludes) {
-          if (include.ignores(importSource)) {
-            // TODO
-          }
-        }
-
         if (
           importSource.charAt(0) !== "." ||
           (importSource.charAt(0) === "." && importSource.length === 1)

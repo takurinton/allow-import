@@ -1,1 +1,2 @@
-export const hoge = "hoge";
+import { b } from "./aaaa/a";
+export const hoge = b;
