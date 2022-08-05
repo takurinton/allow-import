@@ -24,7 +24,7 @@
     "ignore": "^5.2.0"
   },
   "name": "@takurinton/eslint-plugin-allow-import",
-  "version": "0.0.0-beta.2",
+  "version": "0.0.0-beta.3",
   "main": "dist/index.js",
   "files": [
     "dist",
