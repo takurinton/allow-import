@@ -1,4 +1,4 @@
-import { isLintTarget } from "../rules/core";
+import { checkAbsolutePath, isLintTarget } from "../rules/core";
 
 describe("test isLintTarget", () => {
   it("Should return true includes and excludes are empty", () => {
@@ -60,6 +60,19 @@ describe("test isLintTarget", () => {
   });
 });
 
-describe("test checkAbsolutePath", () => {});
+describe("test checkAbsolutePath", () => {
+  it("Should return true if importSource is absolute path", () => {
+    const importSource = "react";
+    expect(checkAbsolutePath(importSource)).toBe(true);
+  });
+  it("Should return false if importSource is relative path", () => {
+    const importSource = "./Hoge";
+    expect(checkAbsolutePath(importSource)).toBe(false);
+  });
+  it("Should return true if importSource is relative path, but current directory", () => {
+    const importSource = ".";
+    expect(checkAbsolutePath(importSource)).toBe(true);
+  });
+});
 
 describe("test checkAllowPatterns", () => {});
