@@ -1,13 +1,26 @@
 import { isLintTarget } from "../rules/core";
 
 describe("test isLintTarget", () => {
+  it("Should return true includes and excludes are empty", () => {
+    const filename = "/path/to/src/Hoge/a";
+    const options = [
+      {
+        patterns: [
+          /** some patterns */
+        ],
+        includes: [],
+        excludes: [],
+      },
+    ];
+    expect(isLintTarget({ filename, options })).toBe(true);
+  });
   it("Should return true if filename is included in includes", () => {
     const filename = "/path/to/src/Hoge/a";
     const options = [
       {
         patterns: [],
         includes: ["**/*/Hoge/**/*"],
-        excludes: [""],
+        excludes: [],
       },
     ];
     expect(isLintTarget({ filename, options })).toBe(true);
@@ -18,7 +31,7 @@ describe("test isLintTarget", () => {
       {
         patterns: [],
         includes: ["**/*/Piyo/**/*"],
-        excludes: [""],
+        excludes: [],
       },
     ];
     expect(isLintTarget({ filename, options })).toBe(false);
