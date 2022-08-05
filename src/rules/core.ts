@@ -23,9 +23,15 @@ const isLintTarget = ({ filename, options }: IsLintTargetType) => {
   return true;
 };
 
-const checkAbsolutePath = (importSource: string) =>
-  importSource.charAt(0) !== "." ||
-  (importSource.charAt(0) === "." && importSource.length === 1);
+const checkAbsolutePath = (importSource: string) => {
+  const re = /^\./;
+  const isAbsolutePath = re.test(importSource);
+  return (
+    !isAbsolutePath || // Forexample: importSource = "react"
+    importSource.startsWith("/") || // Forexample: importSource = "/hoge"
+    (isAbsolutePath && importSource.length === 1) // Forexample: importSource = "."
+  );
+};
 
 const checkAllowPatterns = ({
   importSource,
