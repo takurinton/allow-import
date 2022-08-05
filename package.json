@@ -24,7 +24,7 @@
     "ignore": "^5.2.0"
   },
   "name": "@takurinton/eslint-plugin-allow-import",
-  "version": "0.0.0-beta.1",
+  "version": "0.0.0-beta.2",
   "main": "dist/index.js",
   "files": [
     "dist",
@@ -33,7 +33,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/takurinton/eslint-plugin-allow-import.git"
+    "url": "git+https://github.com/takurinton/allow-import.git"
   },
   "scripts": {
     "build": "tsc",
