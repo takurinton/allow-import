@@ -33,7 +33,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/takurinton/allow-import.git"
+    "url": "git+https://github.com/takurinton/eslint-plugin-allow-import.git"
   },
   "scripts": {
     "build": "tsc",

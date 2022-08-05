@@ -4,12 +4,12 @@ import ignore, { Ignore } from "ignore";
 type Options = {
   patterns: string[];
   includes: string[];
-  execludes: string[];
+  excludes: string[];
 }[];
 
 const getPatterns = (options: Options) => options[0].patterns;
 // const getIncludes = (options: Options) => options[0].includes;
-const getExecludes = (options: Options) => options[0].execludes;
+const getExcludes = (options: Options) => options[0].excludes;
 const convertIgnore = (optionList: string[]) =>
   optionList.map((option) => ignore({ allowRelativePaths: true }).add(option));
 
@@ -20,7 +20,7 @@ export const allowImport: TSESLint.RuleModule<"messageId", []> = {
       category: "Best Practices",
       description: "",
       recommended: "error",
-      url: "https://github.com/takurinton/allow-import#README",
+      url: "https://github.com/takurinton/eslint-plugin-allow-import#README",
     },
     messages: {
       messageId: "Don't allow import '{{ name }}'",
@@ -31,7 +31,7 @@ export const allowImport: TSESLint.RuleModule<"messageId", []> = {
         properties: {
           patterns: "object",
           // includes: "array",
-          execludes: "array",
+          excludes: "array",
         },
         additionalProperties: false,
       },
@@ -41,16 +41,16 @@ export const allowImport: TSESLint.RuleModule<"messageId", []> = {
     const { parserServices, options, getFilename } = context;
     const patterns = getPatterns(options);
     // const includes = getIncludes(options) || ["./**/*"];
-    const execludes = getExecludes(options) || [];
+    const excludes = getExcludes(options) || [];
 
     if (!parserServices) return {};
 
     const allowPatterns: Ignore[] = convertIgnore(patterns);
     // const allowIncludes: Ignore[] = convertIgnore(includes);
-    const allowExecludes: Ignore[] = convertIgnore(execludes);
+    const allowExcludes: Ignore[] = convertIgnore(excludes);
 
     // exeludes で渡されたパスは除外
-    for (const execlude of allowExecludes) {
+    for (const execlude of allowExcludes) {
       if (execlude.ignores(getFilename())) {
         return {
           Program: () => {},

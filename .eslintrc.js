@@ -22,7 +22,7 @@ module.exports = {
       {
         patterns: ["./**/*", "utils", "a", "Piyo"], // 自分のディレクトリの下だったら許可
         // includes: [],
-        execludes: ["utils"], // 除外するパス
+        excludes: ["utils"], // 除外するパス
       },
     ],
   },
