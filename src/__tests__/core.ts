@@ -1,4 +1,8 @@
-import { checkAbsolutePath, isLintTarget } from "../rules/core";
+import {
+  checkAbsolutePath,
+  checkAllowPatterns,
+  isLintTarget,
+} from "../rules/core";
 
 describe("test isLintTarget", () => {
   it("Should return true includes and excludes are empty", () => {
@@ -75,4 +79,38 @@ describe("test checkAbsolutePath", () => {
   });
 });
 
-describe("test checkAllowPatterns", () => {});
+describe("test checkAllowPatterns", () => {
+  it("Should return false if patterns is empty", () => {
+    const importSource = "/path/to/src/Hoge/a";
+    const options = [
+      {
+        patterns: [],
+        includes: [],
+        excludes: [],
+      },
+    ];
+    expect(checkAllowPatterns({ importSource, options })).toBe(false);
+  });
+  it("Should return true if importSource is included in allowPatterns", () => {
+    const importSource = "./Hoge";
+    const options = [
+      {
+        patterns: ["Hoge"],
+        includes: [],
+        excludes: [],
+      },
+    ];
+    expect(checkAllowPatterns({ importSource, options })).toBe(true);
+  });
+  it("Should return true if importSource is not included in allowPatterns", () => {
+    const importSource = "./Piyo";
+    const options = [
+      {
+        patterns: ["Hoge"],
+        includes: [],
+        excludes: [],
+      },
+    ];
+    expect(checkAllowPatterns({ importSource, options })).toBe(false);
+  });
+});
