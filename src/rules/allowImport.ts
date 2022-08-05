@@ -10,8 +10,28 @@ type Options = {
 const getPatterns = (options: Options) => options[0].patterns;
 const getIncludes = (options: Options) => options[0].includes;
 const getExcludes = (options: Options) => options[0].excludes;
-const convertIgnore = (optionList: string[]) =>
+const convertToIgnore = (optionList: string[]) =>
   optionList.map((option) => ignore({ allowRelativePaths: true }).add(option));
+
+const isLintTarget = ({
+  filename,
+  allowIncludes,
+  allowExcludes,
+}: {
+  filename: string;
+  allowIncludes: Ignore[];
+  allowExcludes: Ignore[];
+}) => {
+  for (const include of allowIncludes) {
+    if (!include.ignores(filename)) return false;
+  }
+
+  for (const execlude of allowExcludes) {
+    if (execlude.ignores(filename)) return false;
+  }
+
+  return true;
+};
 
 export const allowImport: TSESLint.RuleModule<"messageId", []> = {
   meta: {
@@ -20,10 +40,11 @@ export const allowImport: TSESLint.RuleModule<"messageId", []> = {
       category: "Best Practices",
       description: "",
       recommended: "error",
-      url: "https://github.com/takurinton/eslint-plugin-allow-import#README",
+      url: "https://github.com/takurinton/allow-import#README",
     },
     messages: {
-      messageId: "Don't allow import '{{ name }}'",
+      messageId:
+        "Don't allow import source '{{ name }}'. Create internal directory or disable this rule.",
     },
     schema: [
       {
@@ -39,37 +60,22 @@ export const allowImport: TSESLint.RuleModule<"messageId", []> = {
   },
   create: (context) => {
     const { parserServices, options, getFilename } = context;
+    if (!parserServices) return {};
+
     const patterns = getPatterns(options);
     const includes = getIncludes(options) || [];
     const excludes = getExcludes(options) || [];
 
-    if (!parserServices) return {};
-
-    const allowPatterns: Ignore[] = convertIgnore(patterns);
-    const allowIncludes: Ignore[] = convertIgnore(includes);
-    const allowExcludes: Ignore[] = convertIgnore(excludes);
+    const allowPatterns: Ignore[] = convertToIgnore(patterns);
+    const allowIncludes: Ignore[] = convertToIgnore(includes);
+    const allowExcludes: Ignore[] = convertToIgnore(excludes);
 
     const filename = getFilename();
-    for (const include of allowIncludes) {
-      if (!include.ignores(filename)) {
-        return {
-          Program: () => {},
-        };
-      }
+    if (!isLintTarget({ filename, allowIncludes, allowExcludes })) {
+      return {
+        Program: () => {},
+      };
     }
-
-    // exeludes で渡されたパスは除外
-    for (const execlude of allowExcludes) {
-      if (execlude.ignores(filename)) {
-        return {
-          Program: () => {},
-        };
-      }
-    }
-
-    const checkAllowPatterns = (importSource: string) =>
-      allowPatterns.length > 0 &&
-      allowPatterns.some((allowPattern) => allowPattern.ignores(importSource));
 
     return {
       ImportDeclaration(node): void {
@@ -80,6 +86,12 @@ export const allowImport: TSESLint.RuleModule<"messageId", []> = {
         ) {
           return;
         }
+
+        const checkAllowPatterns = (importSource: string) =>
+          allowPatterns.length > 0 &&
+          allowPatterns.some((allowPattern) =>
+            allowPattern.ignores(importSource)
+          );
 
         if (!checkAllowPatterns(importSource)) {
           context.report({
