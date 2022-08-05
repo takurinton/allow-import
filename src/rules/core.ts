@@ -28,7 +28,6 @@ const checkAbsolutePath = (importSource: string) => {
   const isAbsolutePath = re.test(importSource);
   return (
     !isAbsolutePath || // Forexample: importSource = "react"
-    importSource.startsWith("/") || // Forexample: importSource = "/hoge"
     (isAbsolutePath && importSource.length === 1) // Forexample: importSource = "."
   );
 };
