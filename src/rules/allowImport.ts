@@ -7,6 +7,12 @@ type Options = {
   excludes: string[];
 }[];
 
+type IsLintTargetType = {
+  filename: string;
+  allowIncludes: Ignore[];
+  allowExcludes: Ignore[];
+};
+
 const getPatterns = (options: Options) => options[0].patterns;
 const getIncludes = (options: Options) => options[0].includes;
 const getExcludes = (options: Options) => options[0].excludes;
@@ -17,11 +23,7 @@ const isLintTarget = ({
   filename,
   allowIncludes,
   allowExcludes,
-}: {
-  filename: string;
-  allowIncludes: Ignore[];
-  allowExcludes: Ignore[];
-}) => {
+}: IsLintTargetType) => {
   for (const include of allowIncludes) {
     if (!include.ignores(filename)) return false;
   }
