@@ -8,7 +8,7 @@ type Options = {
 }[];
 
 const getPatterns = (options: Options) => options[0].patterns;
-// const getIncludes = (options: Options) => options[0].includes;
+const getIncludes = (options: Options) => options[0].includes;
 const getExcludes = (options: Options) => options[0].excludes;
 const convertIgnore = (optionList: string[]) =>
   optionList.map((option) => ignore({ allowRelativePaths: true }).add(option));
@@ -30,7 +30,7 @@ export const allowImport: TSESLint.RuleModule<"messageId", []> = {
         type: "object",
         properties: {
           patterns: "object",
-          // includes: "array",
+          includes: "array",
           excludes: "array",
         },
         additionalProperties: false,
@@ -40,18 +40,27 @@ export const allowImport: TSESLint.RuleModule<"messageId", []> = {
   create: (context) => {
     const { parserServices, options, getFilename } = context;
     const patterns = getPatterns(options);
-    // const includes = getIncludes(options) || ["./**/*"];
+    const includes = getIncludes(options) || [];
     const excludes = getExcludes(options) || [];
 
     if (!parserServices) return {};
 
     const allowPatterns: Ignore[] = convertIgnore(patterns);
-    // const allowIncludes: Ignore[] = convertIgnore(includes);
+    const allowIncludes: Ignore[] = convertIgnore(includes);
     const allowExcludes: Ignore[] = convertIgnore(excludes);
+
+    const filename = getFilename();
+    for (const include of allowIncludes) {
+      if (!include.ignores(filename)) {
+        return {
+          Program: () => {},
+        };
+      }
+    }
 
     // exeludes で渡されたパスは除外
     for (const execlude of allowExcludes) {
-      if (execlude.ignores(getFilename())) {
+      if (execlude.ignores(filename)) {
         return {
           Program: () => {},
         };

@@ -20,8 +20,8 @@ module.exports = {
     "local-rules/": [
       "error",
       {
-        patterns: ["./**/*", "utils", "a", "Piyo"], // 自分のディレクトリの下だったら許可
-        // includes: [],
+        patterns: ["./**/*", "utils", "a"], // 自分のディレクトリの下だったら許可
+        includes: [],
         excludes: ["utils"], // 除外するパス
       },
     ],
